@@ -5,6 +5,7 @@ import { getBannerData } from "@/lib/util/data";
 import { BannerDataProps } from "@/lib/util/type";
 import { CiStar } from "react-icons/ci";
 import { useRequest } from "@/lib/hooks/useRequest";
+import TitleCards from "./TitleCards";
 
 const Banner = () => {
   const { data: heroData, isLoading: bannerLoading } = useQuery<
@@ -29,7 +30,7 @@ const Banner = () => {
   }, [bannerData.length]);
 
   return (
-    <section className="text-center w-full relative h-175 overflow hiddden">
+    <section className="text-center w-full relative h-175 overflow-hidden">
       {bannerData.map((item: BannerDataProps, index: number) => (
         <div
           key={index}
@@ -41,12 +42,7 @@ const Banner = () => {
         >
           <article className=" w-full flex flex-col justify-center items-center text-main-col mt-24 ">
             <div className="bg-main-accent/95 p-12">
-              <h2 className="text-8xl font-bold">Boston Gaming</h2>
-              <div className="flex flex-row gap-4 justify-center items-center">
-                <div className="h-2 w-full bg-main-col"></div>
-                <CiStar className="text-8xl flex justify-center items-center text-main-col" />
-                <div className="h-2 w-full bg-main-col"></div>
-              </div>
+              <TitleCards title="Boston Gaming" />
               <p className="text-2xl font-thin ">
                 Affordable - Professionel - Aesthetic <br />
                 Let us build your next rig

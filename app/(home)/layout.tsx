@@ -11,6 +11,7 @@ import { tanstackQueryClient } from "@/lib/util/TanstackQueryClient";
 import { getBannerData, getProductData } from "@/lib/util/data";
 import Header from "@/components/homeLayout/Header";
 import { useRequest } from "@/lib/hooks/useRequest";
+import Footer from "@/components/homeLayout/Footer";
 
 const ds = dehydrate(tanstackQueryClient);
 
@@ -49,8 +50,11 @@ export default function HomeLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
-        <ReactQueryProvider dehydratedState={ds}>{children}</ReactQueryProvider>
+        <ReactQueryProvider dehydratedState={ds}>
+          <Header />
+          {children}
+          <Footer />
+        </ReactQueryProvider>
       </body>
     </html>
   );

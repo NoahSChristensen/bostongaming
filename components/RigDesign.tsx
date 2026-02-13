@@ -2,11 +2,13 @@
 import { CiStar } from "react-icons/ci";
 import { useQuery } from "@tanstack/react-query";
 import { useRequest } from "@/lib/hooks/useRequest";
-import { CategoryProps } from "@/lib/util/type";
+import { CategoryProps, GearDataProps } from "@/lib/util/type";
 import { useState, FormEvent } from "react";
+import TitleCards from "./TitleCards";
 
 const RigDesign = (id: string) => {
   const [summary, setSummary] = useState(0);
+  const [radioButton, setRadioButton] = useState(false);
 
   const { data: categoryData, isLoading: categoryLoading } = useQuery<
     CategoryProps[]
@@ -24,9 +26,15 @@ const RigDesign = (id: string) => {
       ),
   });
 
-  console.log(gearCategoryData)
+  const { data: gearData, isLoading: gearLoading } = useQuery<GearDataProps[]>({
+    queryKey: [`gearData`],
+    queryFn: () => useRequest(`${process.env.NEXT_PUBLIC_SERVER_HOST}/gear `),
+  });
 
-  if (categoryLoading && gearCategoryLoading) return <p>Loading...</p>;
+  console.log(gearData);
+
+  if (categoryLoading && gearCategoryLoading && gearLoading)
+    return <p>Loading...</p>;
 
   const handleSummary = (e: any) => {
     e.preventDefault();
@@ -35,37 +43,47 @@ const RigDesign = (id: string) => {
 
   return (
     <section className="w-full bg-main-accent py-12">
-      <div className="flex flex-col justify-center items-center">
-        <article>
-          <h3 className="text-main-col font-bold text-6xl uppercase">
-            Design your own rig
-          </h3>
-          <div className="flex flex-row gap-4 justify-center items-center">
-            <div className="h-2 w-full bg-main-col"></div>
-            <CiStar className="text-8xl flex justify-center items-center text-main-col" />
-            <div className="h-2 w-full bg-main-col"></div>
-          </div>
-        </article>
-      </div>
-      <section className="flex flex-row gap-8 mt-12 max-w-350 mx-auto">
+      <TitleCards title="Design your own rig" />
+      <section className="flex flex-col md:flex-row gap-8 mt-12 max-w-350 mx-auto">
         <div className="w-full flex-flex-col justify-center items-center max-w-600 px-4 h-full">
           <article>
             <h6 className="text-main-col uppercase text-2xl py-4 text-center font-bold">
               Pick your gear
             </h6>
           </article>
-          <div className="text-main-col w-full">
+          <section className="text-main-col w-full">
             {categoryData?.map((category: CategoryProps) => (
               <div
                 key={category._id}
                 className="bg-seconday-col text-main-col rounded-2xl px-8 py-4 mb-4"
               >
-                <div className="w-full">
-                  <span>{category.gearcategorytitle}</span>
+                <div className="w-full flex flex-row justify-between items-center">
+                  <span className="font-bold text-2xl">
+                    {category.gearcategorytitle} :
+                  </span>
+                  <form className="text-main-col">
+                    {gearData?.map((item: GearDataProps) => {
+                      if (item.gearcategory._id === category._id) {
+                        return (
+                          <div key={item._id}>
+                            <label htmlFor="input"> {item.geartitle} </label>
+                            <input
+                              id="input"
+                              type="radio"
+                              checked={radioButton}
+                              value={item.geartitle}
+                              // LAVER ALT FOR MANGE RE-RENDER SIGER REACT ELLER NEXTJS onChange={setRadioButton(true)}
+                            />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </form>
                 </div>
               </div>
             ))}
-          </div>
+          </section>
         </div>
         <div className="w-full flex-flex-col h-full max-w-600 px-4 ">
           <article>

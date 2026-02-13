@@ -3,7 +3,7 @@ import NavbarItem from "./NavbarItem";
 
 const Navbar = () => {
   return (
-    <nav className="flex flex-row gap-8 justify-center items-center">
+    <nav className="hidden md:flex flex-row gap-8 justify-center items-center">
       <NavbarItem name="Products" href="/" />
       <NavbarItem name="Design your own" href="/" />
       <NavbarItem name="About" href="/" />
