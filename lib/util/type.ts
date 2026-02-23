@@ -61,7 +61,6 @@ export type FooterProps = {
   location: string;
 };
 
-
 export interface GearDataProps {
   _id: string;
   geartitle: string;
@@ -69,4 +68,16 @@ export interface GearDataProps {
     _id: string;
     gearcategorytitle: string;
   };
+}
+
+export type User = {
+  email: string;
+  password: string;
+  admin: boolean;
+};
+
+export type UserContextType = {
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
 };

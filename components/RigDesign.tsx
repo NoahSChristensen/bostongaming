@@ -5,10 +5,11 @@ import { useRequest } from "@/lib/hooks/useRequest";
 import { CategoryProps, GearDataProps } from "@/lib/util/type";
 import { useState, FormEvent } from "react";
 import TitleCards from "./TitleCards";
+import { PRICEBYID } from "@/lib/util/priceMap";
+import Summary from "./Summary";
 
 const RigDesign = (id: string) => {
-  const [summary, setSummary] = useState(0);
-  const [radioButton, setRadioButton] = useState(false);
+  const [summary, setSummary] = useState<Record<string, string>>({});
 
   const { data: categoryData, isLoading: categoryLoading } = useQuery<
     CategoryProps[]
@@ -39,6 +40,10 @@ const RigDesign = (id: string) => {
   const handleSummary = (e: any) => {
     e.preventDefault();
     console.log(`Summary: ${summary}`);
+    const totalPrice = Object.values(summary).reduce((total, gearId) => {
+      return total + (PRICEBYID[gearId] ?? 0);
+    }, 0);
+    console.log(`Total Price: ${totalPrice}`);
   };
 
   return (
@@ -52,51 +57,62 @@ const RigDesign = (id: string) => {
             </h6>
           </article>
           <section className="text-main-col w-full">
-            {categoryData?.map((category: CategoryProps) => (
-              <div
-                key={category._id}
-                className="bg-seconday-col text-main-col rounded-2xl px-8 py-4 mb-4"
-              >
-                <div className="w-full flex flex-row justify-between items-center">
-                  <span className="font-bold text-2xl">
-                    {category.gearcategorytitle} :
-                  </span>
-                  <form className="text-main-col">
+            <form onSubmit={handleSummary} className="text-main-col">
+              {categoryData?.map((category: CategoryProps) => (
+                <div
+                  key={category._id}
+                  className="bg-seconday-col text-main-col rounded-2xl px-8 py-4 mb-4"
+                >
+                  <div className="w-full flex flex-col justify-between items-center">
+                    <span className="font-bold text-2xl">
+                      {category.gearcategorytitle} :
+                    </span>
+
                     {gearData?.map((item: GearDataProps) => {
                       if (item.gearcategory._id === category._id) {
+                        const price = PRICEBYID[item._id] ?? 0;
                         return (
-                          <div key={item._id}>
-                            <label htmlFor="input"> {item.geartitle} </label>
+                          <div className="py-1 text-end" key={item._id}>
+                            <label
+                              className="space-x-4 cursor-pointer"
+                              htmlFor={item._id}
+                            >
+                              {item.geartitle} — {price} kr
+                            </label>
                             <input
-                              id="input"
                               type="radio"
-                              checked={radioButton}
-                              value={item.geartitle}
-                              // LAVER ALT FOR MANGE RE-RENDER SIGER REACT ELLER NEXTJS onChange={setRadioButton(true)}
+                              name={category._id}
+                              value={item._id}
+                              checked={summary[category._id] === item._id}
+                              onChange={(e) => {
+                                const gearId = e.target.value;
+                                setSummary((prev) => ({
+                                  ...prev,
+                                  [category._id]: gearId,
+                                }));
+                              }}
                             />
                           </div>
                         );
                       }
                       return null;
                     })}
-                  </form>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </form>
           </section>
         </div>
         <div className="w-full flex-flex-col h-full max-w-600 px-4 ">
-          <article>
-            <h6 className="text-main-col uppercase text-2xl py-4 text-center font-bold">
-              Summary
-            </h6>
-            <div className="w-full flex flex-row justify-between bg-main-col py-2 px-4 rounded-sm text-center items-center ">
-              <span>Total</span>
-              <span className="bg-main-accent text-main-col rounded-[100%] px-2 py-1 ">
-                ${summary}
-              </span>
-            </div>
-          </article>
+          <Summary
+            summary={summary}
+            gearData={gearData}
+            priceMap={PRICEBYID}
+            totalPrice={Object.values(summary).reduce(
+              (total, gearId) => total + (PRICEBYID[gearId] ?? 0),
+              0,
+            )}
+          />
         </div>
       </section>
     </section>

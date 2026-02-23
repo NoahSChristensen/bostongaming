@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { UserProvider } from "@/lib/context/UserContext";
+import "../globals.css";
+import ReactQueryProvider from "@/lib/util/ReactQueryProvider";
 import { tanstackQueryClient } from "@/lib/util/TanstackQueryClient";
 import { dehydrate } from "@tanstack/react-query";
-import ReactQueryProvider from "@/lib/util/ReactQueryProvider";
+import { UserProvider } from "@/lib/context/UserContext";
+import AdminGuard from "@/lib/util/AdminGuard";
 
 const ds = dehydrate(tanstackQueryClient);
 
@@ -30,14 +31,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
         <ReactQueryProvider dehydratedState={ds}>
-          <UserProvider>{children}</UserProvider>
+          <AdminGuard>
+            <UserProvider>{children}</UserProvider>
+          </AdminGuard>
         </ReactQueryProvider>
-      </body>
-    </html>
   );
 }

@@ -46,16 +46,10 @@ export default function HomeLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
         <ReactQueryProvider dehydratedState={ds}>
           <Header />
           {children}
           <Footer />
         </ReactQueryProvider>
-      </body>
-    </html>
   );
 }
